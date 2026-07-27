@@ -232,13 +232,7 @@
         </div>`;
     }
 
-    function renderError() {
-      document.getElementById('content').innerHTML = `
-        <div class="loading">
-          <p class="loading-text" style="color:var(--text-danger)">Something went wrong. Check your API key and try again.</p>
-          <button class="btn btn-ghost" style="margin-top:1rem" onclick="restart()">Restart</button>
-        </div>`;
-    }
+
 
     function restart() { answers = []; current = 0; document.getElementById('progress').style.width = '0%'; render(); }
 
