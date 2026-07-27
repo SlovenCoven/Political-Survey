@@ -375,26 +375,106 @@
 
   <script>
     const questions = [
-      { q: "The government's primary role should be to...", options: ["Protect individual rights and freedoms with minimal interference", "Ensure equal opportunity and reduce systemic disadvantages", "Enforce traditional moral values and social order"], axes: { liberty: 1, economic: 0, social: 0, change: 0 } },
-      { q: "When it comes to the economy, I believe...", options: ["Free markets naturally lead to the best outcomes for everyone", "Markets need strong regulation to prevent exploitation", "We should prioritize community and collective wellbeing over individual profit"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } },
-      { q: "On immigration, the priority should be...", options: ["Open borders — people should be free to move where they choose", "A controlled system that balances compassion with national interests", "Strict limits to protect national identity and security"], axes: { liberty: 2, economic: 0, social: 0, change: 1 } },
-      { q: "Taxes should primarily be used to...", options: ["Be kept as low as possible so people keep their earnings", "Fund essential services like healthcare, education, and infrastructure", "Redistribute wealth to ensure greater equality"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } },
-      { q: "On social issues like marriage equality and drug policy, I think...", options: ["Individuals should have maximum personal freedom in lifestyle choices", "Society should protect marginalized groups while allowing personal freedom", "Traditional values and morality should guide social policy"], axes: { liberty: 2, economic: 0, social: 2, change: 0 } },
-      { q: "Climate change policy should...", options: ["Be left to market innovation rather than government mandates", "Involve moderate regulations and international cooperation", "Be prioritized with aggressive government action"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } },
-      { q: "Criminal justice should focus on...", options: ["Protecting individual rights from state overreach", "Rehabilitation and addressing root causes of crime", "Swift punishment as a deterrent to crime"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } },
-      { q: "Healthcare should be...", options: ["A free market good where competition drives down costs", "A right, provided through a public-private mixed system", "Controlled primarily by government to ensure universal access"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } },
-      { q: "My view on political authority is...", options: ["The less government, the better — people can govern themselves", "Government is a necessary tool for creating a just society", "Strong leadership is needed to maintain order and tradition"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } },
-      { q: "When tradition and progress conflict, I think...", options: ["Both deserve equal scrutiny before acting", "Progress and reform should take priority over outdated norms", "Tradition contains wisdom that shouldn't be discarded"], axes: { liberty: 0, economic: 0, social: 0, change: 0 } },
-      { q: "Gun ownership should be...", options: ["An absolute right with minimal restrictions", "Allowed with reasonable background checks and regulations", "Tightly regulated to protect public safety"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } },
-      { q: "The best way to address poverty is...", options: ["Remove barriers to entrepreneurship and economic freedom", "Expand social safety nets and job training programs", "Encourage community and collective responsibility"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } },
-      { q: "On foreign policy, I believe the country should...", options: ["Stay out of other nations' affairs and focus on itself", "Engage diplomatically and through multilateral institutions", "Assertively promote its values and interests globally"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } },
-      { q: "Public education should...", options: ["Be opened to competition through school choice and vouchers", "Be well-funded and equitable across all communities", "Emphasize civic values, discipline, and traditional knowledge"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } },
-      { q: "When it comes to corporations and big business...", options: ["They drive innovation and should face minimal regulation", "They need oversight to prevent monopolies and protect workers", "They should serve community interests first"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } },
-      { q: "Drug policy should...", options: ["Fully decriminalize or legalize all drugs as a personal freedom", "Decriminalize personal use while targeting trafficking", "Maintain strict laws to prevent drug use"], axes: { liberty: 2, economic: 0, social: 2, change: 0 } },
-      { q: "The gap between rich and poor is..., options: ["A natural result of differing talent and effort", "A problem that requires government intervention to fix", "Concerning but best addressed through community action"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } },
-      { q: "Free speech should be...", options: ["Absolute — the government should never restrict speech", "Protected but with limits on harassment and incitement", "Balanced with responsibility and protection from harm"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } },
-      { q: "On religion and government, I believe...", options: ["The state should be fully secular and religion kept private", "Faith can inform values but shouldn't dictate law", "Religious and moral values should guide governance"], axes: { liberty: 0, economic: 0, social: 0, change: 0 } },
-      { q: "The best description of my overall political outlook is...", options: ["I want maximum freedom for individuals from all authority", "I want a fair, reformed system that works for everyone", "I want to preserve values and stability while adapting carefully"], axes: { liberty: 2, economic: 0, social: 0, change: 0 } }
+      {
+        q: "The government's primary role should be to...",
+        options: ["Protect individual rights and freedoms with minimal interference", "Ensure equal opportunity and reduce systemic disadvantages", "Balance protecting rights with ensuring fairness"],
+        axes: { liberty: [2, 0, 1], economic: [2, 0, 1], social: [0, 2, 1], change: [0, 2, 1] }
+      },
+      {
+        q: "When it comes to the economy, I believe...",
+        options: ["Free markets naturally lead to the best outcomes for everyone", "Markets need strong regulation to prevent exploitation", "We should blend market freedom with necessary safeguards"],
+        axes: { liberty: [2, 0, 1], economic: [2, 0, 1], social: [0, 2, 1], change: [0, 1, 2] }
+      },
+      {
+        q: "On immigration, the priority should be...",
+        options: ["Open borders — people should be free to move where they choose", "A controlled system that balances compassion with national interests", "Strict limits to protect jobs and culture"],
+        axes: { liberty: [2, 1, 0], economic: [1, 1, 0], social: [2, 1, 0], change: [2, 1, 0] }
+      },
+      {
+        q: "Taxes should primarily be used to...",
+        options: ["Be kept as low as possible so people keep their earnings", "Fund essential services like healthcare, education, and infrastructure", "Be moderate, funding key services without excess burden"],
+        axes: { liberty: [2, 0, 1], economic: [2, 0, 1], social: [0, 2, 1], change: [0, 2, 1] }
+      },
+      {
+        q: "On social issues like marriage equality and drug policy, I think...",
+        options: ["Individuals should have maximum personal freedom in lifestyle choices", "Society should protect marginalized groups while respecting tradition", "Government should stay neutral on personal lifestyle matters"],
+        axes: { liberty: [2, 0, 1], economic: [1, 1, 1], social: [2, 0, 1], change: [2, 0, 1] }
+      },
+      {
+        q: "Climate change policy should...",
+        options: ["Be left to market innovation rather than government mandates", "Involve moderate regulations and international cooperation", "Be prioritized with strong government intervention"],
+        axes: { liberty: [2, 1, 0], economic: [2, 1, 0], social: [1, 1, 2], change: [0, 1, 2] }
+      },
+      {
+        q: "Criminal justice should focus on...",
+        options: ["Protecting individual rights from state overreach", "Rehabilitation and addressing root causes of crime", "Swift punishment as a deterrent to crime"],
+        axes: { liberty: [2, 1, 0], economic: [1, 1, 1], social: [0, 2, 0], change: [0, 2, 0] }
+      },
+      {
+        q: "Healthcare should be...",
+        options: ["A free market good where competition drives down costs", "A right, provided through a public-private mixed system", "Controlled primarily by government to ensure universal access"],
+        axes: { liberty: [2, 1, 0], economic: [2, 1, 0], social: [0, 1, 2], change: [0, 1, 2] }
+      },
+      {
+        q: "My view on political authority is...",
+        options: ["The less government, the better — people can govern themselves", "Government is a necessary tool for creating a just society", "Strong leadership is needed to maintain order and progress"],
+        axes: { liberty: [2, 1, 0], economic: [2, 1, 0], social: [0, 2, 0], change: [0, 2, 0] }
+      },
+      {
+        q: "When tradition and progress conflict, I think...",
+        options: ["Both deserve equal scrutiny before acting", "Progress and reform should take priority over outdated norms", "Tradition contains wisdom and should guide us carefully"],
+        axes: { liberty: [1, 2, 0], economic: [1, 2, 0], social: [1, 2, 0], change: [1, 2, 0] }
+      },
+      {
+        q: "Gun ownership should be...",
+        options: ["An absolute right with minimal restrictions", "Allowed with reasonable background checks and regulations", "Tightly regulated to protect public safety"],
+        axes: { liberty: [2, 1, 0], economic: [1, 1, 1], social: [0, 1, 2], change: [0, 1, 2] }
+      },
+      {
+        q: "The best way to address poverty is...",
+        options: ["Remove barriers to entrepreneurship and economic freedom", "Expand social safety nets and job training programs", "Encourage community and mutual aid alongside targeted support"],
+        axes: { liberty: [2, 0, 1], economic: [2, 0, 1], social: [0, 2, 1], change: [0, 2, 1] }
+      },
+      {
+        q: "On foreign policy, I believe the country should...",
+        options: ["Stay out of other nations' affairs and focus on itself", "Engage diplomatically and through multilateral institutions", "Protect national interests while respecting others' sovereignty"],
+        axes: { liberty: [2, 1, 0], economic: [2, 1, 0], social: [0, 2, 1], change: [0, 1, 1] }
+      },
+      {
+        q: "Public education should...",
+        options: ["Be opened to competition through school choice and vouchers", "Be well-funded and equitable across all communities", "Emphasize civic values, discipline, and traditional curriculum"],
+        axes: { liberty: [2, 0, 1], economic: [2, 0, 1], social: [0, 2, 0], change: [0, 2, 0] }
+      },
+      {
+        q: "When it comes to corporations and big business...",
+        options: ["They drive innovation and should face minimal regulation", "They need oversight to prevent monopolies and protect workers", "They should serve the public good, not just profit"],
+        axes: { liberty: [2, 0, 1], economic: [2, 0, 1], social: [0, 2, 1], change: [0, 2, 1] }
+      },
+      {
+        q: "Drug policy should...",
+        options: ["Fully decriminalize or legalize all drugs as a personal freedom", "Decriminalize personal use while targeting trafficking", "Maintain strict laws to prevent drug harm"],
+        axes: { liberty: [2, 1, 0], economic: [1, 1, 1], social: [2, 1, 0], change: [2, 1, 0] }
+      },
+      {
+        q: "The gap between rich and poor is...",
+        options: ["A natural result of differing talent and effort", "A problem that requires government intervention to fix", "Concerning but best addressed through growth and opportunity"],
+        axes: { liberty: [2, 0, 1], economic: [2, 0, 1], social: [0, 2, 1], change: [0, 2, 1] }
+      },
+      {
+        q: "Free speech should be...",
+        options: ["Absolute — the government should never restrict speech", "Protected but with limits on harassment and incitement", "Balanced with responsibility and protection of vulnerable groups"],
+        axes: { liberty: [2, 1, 0], economic: [1, 1, 1], social: [0, 1, 2], change: [0, 1, 2] }
+      },
+      {
+        q: "On religion and government, I believe...",
+        options: ["The state should be fully secular and religion kept private", "Faith can inform values but shouldn't dictate law", "Religious and moral values should guide public policy"],
+        axes: { liberty: [2, 1, 0], economic: [1, 1, 1], social: [0, 1, 2], change: [0, 1, 2] }
+      },
+      {
+        q: "The best description of my overall political outlook is...",
+        options: ["I want maximum freedom for individuals from all authority", "I want a fair, reformed system that works for everyone", "I value tradition, stability, and gradual progress"],
+        axes: { liberty: [2, 1, 0], economic: [2, 1, 0], social: [0, 2, 0], change: [0, 2, 0] }
+      }
     ];
 
     let answers = [];
@@ -442,11 +522,9 @@
       questions.forEach((q, i) => {
         const answerIdx = answers[i];
         Object.keys(scores).forEach(axis => {
-          const axisScores = [0, 0, 0];
           if (q.axes && q.axes[axis] !== undefined) {
-            axisScores[q.axes[axis]] += 1;
+            scores[axis] += q.axes[axis][answerIdx] || 0;
           }
-          scores[axis] += axisScores[answerIdx] || 0;
         });
       });
 
