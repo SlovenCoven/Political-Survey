@@ -124,28 +124,29 @@
   </div>
 
   <script>
+    const ANTHROPIC_API_KEY = 'your-api-key-here';
 
     const questions = [
-      { q: "The government's primary role should be to...", options: ["Protect individual rights and freedoms with minimal interference", "Ensure equal opportunity and reduce systemic disadvantages", "Maintain order, tradition, and social stability", "Redistribute wealth and resources more equally"] },
-      { q: "When it comes to the economy, I believe...", options: ["Free markets naturally lead to the best outcomes for everyone", "Markets need strong regulation to prevent exploitation", "We should balance growth with protecting existing institutions", "The means of production should be community or worker-owned"] },
-      { q: "On immigration, the priority should be...", options: ["Open borders — people should be free to move where they choose", "A controlled system that balances compassion with national interest", "Strict limits to preserve national culture and security", "Welcoming immigrants, especially those fleeing poverty or persecution"] },
-      { q: "Taxes should primarily be used to...", options: ["Be kept as low as possible so people keep their earnings", "Fund essential services like healthcare, education, and infrastructure", "Preserve national security and traditional institutions", "Dramatically expand public services and reduce inequality"] },
-      { q: "On social issues like marriage equality and drug policy, I think...", options: ["Individuals should have maximum personal freedom in lifestyle choices", "Society should protect marginalized groups through progressive reform", "Society works best when grounded in traditional moral values", "Social norms must be dismantled to achieve true equality"] },
-      { q: "Climate change policy should...", options: ["Be left to market innovation rather than government mandates", "Involve moderate regulations and international cooperation", "Be weighed carefully against economic impacts and energy security", "Require urgent, radical transformation of our economic system"] },
-      { q: "Criminal justice should focus on...", options: ["Protecting individual rights from state overreach", "Rehabilitation and addressing root causes of crime", "Swift punishment as a deterrent and protection for society", "Abolishing systems that disproportionately harm the poor"] },
-      { q: "Healthcare should be...", options: ["A free market good where competition drives down costs", "A right, provided through a public-private mixed system", "Handled by states and communities, not the federal government", "Fully universal and publicly funded for everyone"] },
-      { q: "My view on political authority is...", options: ["The less government, the better — people can govern themselves", "Government is a necessary tool for creating a just society", "Strong institutions and leadership provide stability and order", "Current power structures must be fundamentally restructured"] },
-      { q: "When tradition and progress conflict, I think...", options: ["Both deserve equal scrutiny before acting", "Progress and reform should take priority over outdated norms", "Tradition contains accumulated wisdom that should guide change", "Radical change is sometimes necessary to achieve justice"] },
-      { q: "Gun ownership should be...", options: ["An absolute right with minimal restrictions", "Allowed with reasonable background checks and regulations", "Tightly regulated to protect public safety", "Heavily restricted or eliminated for civilians"] },
-      { q: "The best way to address poverty is...", options: ["Remove barriers to entrepreneurship and economic freedom", "Expand social safety nets and job training programs", "Encourage community and charitable giving over government programs", "Fundamentally restructure the economy to eliminate wealth gaps"] },
-      { q: "On foreign policy, I believe the country should...", options: ["Stay out of other nations' affairs and focus on itself", "Engage diplomatically and through multilateral institutions", "Maintain military strength to deter threats and protect allies", "Prioritize international solidarity and human rights globally"] },
-      { q: "Public education should...", options: ["Be opened to competition through school choice and vouchers", "Be well-funded and equitable across all communities", "Emphasize civic values, history, and national identity", "Be free through university and fully publicly funded"] },
-      { q: "When it comes to corporations and big business...", options: ["They drive innovation and should face minimal regulation", "They need oversight to prevent monopolies and protect workers", "They are vital to national prosperity and should be supported", "They exploit workers and must be reined in or nationalized"] },
-      { q: "Drug policy should...", options: ["Fully decriminalize or legalize all drugs as a personal freedom", "Decriminalize personal use while targeting trafficking", "Maintain strict laws to protect communities and families", "Legalize drugs and direct revenue to communities harmed by the war on drugs"] },
-      { q: "The gap between rich and poor is...", options: ["A natural result of differing talent and effort", "A problem that requires government intervention to fix", "Concerning but best addressed through cultural and moral renewal", "A fundamental injustice requiring systemic economic transformation"] },
-      { q: "Free speech should be...", options: ["Absolute — the government should never restrict speech", "Protected but with limits on harassment and incitement", "Balanced with responsibilities to community and national cohesion", "Expanded to include protections from corporate censorship"] },
-      { q: "On religion and government, I believe...", options: ["The state should be fully secular and religion kept private", "Faith can inform values but shouldn't dictate law", "Religious and traditional values should guide governance", "Institutions should actively counter religious influence in public life"] },
-      { q: "The best description of my overall political outlook is...", options: ["I want maximum freedom for individuals from all authority", "I want a fair, reformed system that works for everyone", "I want to preserve what works and change things cautiously", "I want a fundamental reimagining of society's structures"] }
+      { q: "The government's primary role should be to...", options: ["Protect individual rights and freedoms with minimal interference", "Ensure equal opportunity and reduce systemic disadvantages", "Balance both individual liberty and collective welfare"] },
+      { q: "When it comes to the economy, I believe...", options: ["Free markets naturally lead to the best outcomes for everyone", "Markets need strong regulation to prevent exploitation", "We should balance market freedom with social protections"] },
+      { q: "On immigration, the priority should be...", options: ["Open borders — people should be free to move where they choose", "A controlled system that balances compassion with national interests", "Strict immigration policies to protect jobs and culture"] },
+      { q: "Taxes should primarily be used to...", options: ["Be kept as low as possible so people keep their earnings", "Fund essential services like healthcare, education, and infrastructure", "Progressive rates that reduce wealth inequality"] },
+      { q: "On social issues like marriage equality and drug policy, I think...", options: ["Individuals should have maximum personal freedom in lifestyle choices", "Society should protect marginalized communities while respecting choice", "Traditional values should guide policy on personal matters"] },
+      { q: "Climate change policy should...", options: ["Be left to market innovation rather than government mandates", "Involve moderate regulations and international cooperation", "Be prioritized above economic concerns"] },
+      { q: "Criminal justice should focus on...", options: ["Protecting individual rights from state overreach", "Rehabilitation and addressing root causes of crime", "Swift punishment as a deterrent to crime"] },
+      { q: "Healthcare should be...", options: ["A free market good where competition drives down costs", "A right, provided through a public-private mixed system", "Controlled primarily by government"] },
+      { q: "My view on political authority is...", options: ["The less government, the better — people can govern themselves", "Government is a necessary tool for creating a just society", "Strong central authority is needed for stability"] },
+      { q: "When tradition and progress conflict, I think...", options: ["Both deserve equal scrutiny before acting", "Progress and reform should take priority over outdated norms", "Tradition contains wisdom that shouldn't be abandoned"] },
+      { q: "Gun ownership should be...", options: ["An absolute right with minimal restrictions", "Allowed with reasonable background checks and regulations", "Tightly regulated to protect public safety"] },
+      { q: "The best way to address poverty is...", options: ["Remove barriers to entrepreneurship and economic freedom", "Expand social safety nets and job training programs", "Encourage community and religious charity"] },
+      { q: "On foreign policy, I believe the country should...", options: ["Stay out of other nations' affairs and focus on itself", "Engage diplomatically and through multilateral institutions", "Maintain military strength and strategic interests"] },
+      { q: "Public education should...", options: ["Be opened to competition through school choice and vouchers", "Be well-funded and equitable across all communities", "Emphasize civic values, history, and traditional knowledge"] },
+      { q: "When it comes to corporations and big business...", options: ["They drive innovation and should face minimal regulation", "They need oversight to prevent monopolies and protect workers", "They should be strictly controlled to serve public interest"] },
+      { q: "Drug policy should...", options: ["Fully decriminalize or legalize all drugs as a personal freedom", "Decriminalize personal use while targeting trafficking", "Maintain strict laws to protect public health"] },
+      { q: "The gap between rich and poor is...", options: ["A natural result of differing talent and effort", "A problem that requires government intervention to fix", "Concerning but best addressed through charity and community"] },
+      { q: "Free speech should be...", options: ["Absolute — the government should never restrict speech", "Protected but with limits on harassment and incitement", "Balanced with responsibilities to prevent harm"] },
+      { q: "On religion and government, I believe...", options: ["The state should be fully secular and religion kept private", "Faith can inform values but shouldn't dictate law", "Religious and traditional values should guide policy"] },
+      { q: "The best description of my overall political outlook is...", options: ["I want maximum freedom for individuals from all authority", "I want a fair, reformed system that works for everyone", "I want a strong society built on tradition and order"] }
     ];
 
     let answers = [];
@@ -189,13 +190,20 @@
 
     async function analyzeAnswers() {
       const summary = questions.map((q, i) => `Q: ${q.q}\nA: ${q.options[answers[i]]}`).join('\n\n');
-    
+      try {
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01'
+          },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-6',
+            model: 'claude-opus-4-1',
             max_tokens: 1000,
             messages: [{
               role: 'user',
-              content: `Based on these 20 quiz answers, determine the person's political philosophy. Return ONLY valid JSON, no markdown, no backticks:\n\n${summary}\n\nReturn: {"label":"<2-4 word philosophy label>","description":"<3 sentence description of their philosophy, their values, and how they see the role of government>","liberty":<0-100>,"economic":<0-100>,"social":<0-100>,"change":<0-100>}\n\nAxes: liberty: 0=authoritarian, 100=libertarian. economic: 0=free market capitalist, 100=socialist. social: 0=conservative, 100=progressive. change: 0=status quo, 100=radical reform.`
+              content: `Based on these 20 quiz answers, determine the person's political philosophy. Return ONLY valid JSON, no markdown, no backticks:\n\n${summary}\n\nReturn: {"label":"<2-4 word political philosophy>","description":"<2-3 sentence description>","liberty":<0-100>,"economic":<0-100>,"social":<0-100>,"change":<0-100>}`
             }]
           })
         });
@@ -232,7 +240,13 @@
         </div>`;
     }
 
-
+    function renderError() {
+      document.getElementById('content').innerHTML = `
+        <div class="loading">
+          <p class="loading-text" style="color:var(--text-danger)">Something went wrong. Check your API key and try again.</p>
+          <button class="btn btn-ghost" style="margin-top:1rem" onclick="restart()">Restart</button>
+        </div>`;
+    }
 
     function restart() { answers = []; current = 0; document.getElementById('progress').style.width = '0%'; render(); }
 
