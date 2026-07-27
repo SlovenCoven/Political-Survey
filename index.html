@@ -124,7 +124,6 @@
   </div>
 
   <script>
-    const ANTHROPIC_API_KEY = ''; // Add your Anthropic API key here
 
     const questions = [
       { q: "The government's primary role should be to...", options: ["Protect individual rights and freedoms with minimal interference", "Ensure equal opportunity and reduce systemic disadvantages", "Maintain order, tradition, and social stability", "Redistribute wealth and resources more equally"] },
@@ -190,15 +189,7 @@
 
     async function analyzeAnswers() {
       const summary = questions.map((q, i) => `Q: ${q.q}\nA: ${q.options[answers[i]]}`).join('\n\n');
-      try {
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': ANTHROPIC_API_KEY,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true'
-          },
+    
           body: JSON.stringify({
             model: 'claude-sonnet-4-6',
             max_tokens: 1000,
