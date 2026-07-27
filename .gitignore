@@ -1,0 +1,7 @@
+node_modules/
+survey_results.db
+.DS_Store
+*.log
+.env
+dist/
+build/
