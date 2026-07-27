@@ -439,6 +439,23 @@
       color: var(--accent-primary);
     }
 
+    .comparison-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      margin-top: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .comparison-bar-user {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 3px;
+      position: relative;
+    }
+
     .loading { 
       text-align: center; 
       padding: 4rem 1rem;
@@ -941,6 +958,10 @@
       ];
 
       document.getElementById('progress').style.width = '100%';
+      
+      // Save result and fetch comparison data
+      saveBig5Result(scores);
+      
       document.getElementById('content').innerHTML = `
         <div class="result-box">
           <p class="result-label">Your Big 5 Profile</p>
@@ -965,8 +986,146 @@
               </div>
             `).join('')}
           </div>
+          <div id="big5-comparison"></div>
           <button class="btn btn-ghost restart-btn" onclick="restart()">Retake Test</button>
         </div>`;
+      
+      // Fetch and display comparison data
+      fetchBig5Comparison(percentages);
+    }
+
+    async function saveBig5Result(scores) {
+      try {
+        await fetch(`${API_BASE}/api/results`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            surveyType: 'big5',
+            extroversion: scores.extroversion,
+            agreeableness: scores.agreeableness,
+            conscientiousness: scores.conscientiousness,
+            neuroticism: scores.neuroticism,
+            openness: scores.openness
+          })
+        });
+      } catch (error) {
+        console.log('Could not save Big 5 results to backend');
+      }
+    }
+
+    async function fetchBig5Comparison(userScores) {
+      try {
+        const statsResponse = await fetch(`${API_BASE}/api/big5/stats`);
+        
+        if (!statsResponse.ok) {
+          return;
+        }
+
+        const stats = await statsResponse.json();
+        
+        if (stats.total_responses === 0) {
+          return;
+        }
+
+        const comparisonHTML = `
+          <div class="comparison-section">
+            <p class="comparison-title">How You Compare</p>
+            <div class="comparison-item">
+              <p class="comparison-label">Total Responses</p>
+              <p style="font-size: 18px; font-weight: 600; color: var(--accent-primary);">${stats.total_responses}</p>
+            </div>
+            <div class="comparison-item">
+              <p class="comparison-label">Extroversion</p>
+              <div class="comparison-content">
+                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_extroversion)}</strong>%</span>
+                <span class="comparison-values">Your Score: <span class="comparison-your-score">${userScores.extroversion}%</span></span>
+              </div>
+              <div class="comparison-bar">
+                <div class="comparison-bar-user" style="width: ${userScores.extroversion}%;"></div>
+              </div>
+            </div>
+            <div class="comparison-item">
+              <p class="comparison-label">Agreeableness</p>
+              <div class="comparison-content">
+                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_agreeableness)}</strong>%</span>
+                <span class="comparison-values">Your Score: <span class="comparison-your-score">${userScores.agreeableness}%</span></span>
+              </div>
+              <div class="comparison-bar">
+                <div class="comparison-bar-user" style="width: ${userScores.agreeableness}%;"></div>
+              </div>
+            </div>
+            <div class="comparison-item">
+              <p class="comparison-label">Conscientiousness</p>
+              <div class="comparison-content">
+                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_conscientiousness)}</strong>%</span>
+                <span class="comparison-values">Your Score: <span class="comparison-your-score">${userScores.conscientiousness}%</span></span>
+              </div>
+              <div class="comparison-bar">
+                <div class="comparison-bar-user" style="width: ${userScores.conscientiousness}%;"></div>
+              </div>
+            </div>
+            <div class="comparison-item">
+              <p class="comparison-label">Neuroticism</p>
+              <div class="comparison-content">
+                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_neuroticism)}</strong>%</span>
+                <span class="comparison-values">Your Score: <span class="comparison-your-score">${userScores.neuroticism}%</span></span>
+              </div>
+              <div class="comparison-bar">
+                <div class="comparison-bar-user" style="width: ${userScores.neuroticism}%;"></div>
+              </div>
+            </div>
+            <div class="comparison-item">
+              <p class="comparison-label">Openness</p>
+              <div class="comparison-content">
+                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_openness)}</strong>%</span>
+                <span class="comparison-values">Your Score: <span class="comparison-your-score">${userScores.openness}%</span></span>
+              </div>
+              <div class="comparison-bar">
+                <div class="comparison-bar-user" style="width: ${userScores.openness}%;"></div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        document.getElementById('big5-comparison').innerHTML = comparisonHTML;
+      } catch (error) {
+        console.log('Backend not available - Big 5 comparison data will not be shown');
+      }
+    }
+
+    async function fetchComparison(scores) {
+      try {
+        const statsResponse = await fetch(`${API_BASE}/api/stats`);
+        
+        if (!statsResponse.ok) {
+          return null;
+        }
+
+        const stats = await statsResponse.json();
+        return stats;
+      } catch (error) {
+        console.log('Backend not available - comparison data will not be shown');
+        return null;
+      }
+    }
+
+    async function savePoliticalResult(result) {
+      try {
+        await fetch(`${API_BASE}/api/results`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            surveyType: 'political',
+            label: result.label,
+            liberty: result.liberty,
+            economic: result.economic,
+            social: result.social,
+            change: result.change
+          })
+        });
+      } catch (error) {
+        console.log('Could not save political results to backend');
+      }
     }
 
     async function renderPoliticalResult(r) {
@@ -977,8 +1136,67 @@
         { name: 'Change', left: 'Status Quo', right: 'Reform', val: r.change, color: '#d4a85c' }
       ];
 
+      // Save result to backend
+      await savePoliticalResult(r);
+
+      // Fetch comparison data
+      const stats = await fetchComparison(r);
+
       document.getElementById('progress').style.width = '100%';
       
+      let comparisonHTML = '';
+      if (stats && stats.total_responses > 0) {
+        comparisonHTML = `
+          <div class="comparison-section">
+            <p class="comparison-title">How You Compare</p>
+            <div class="comparison-item">
+              <p class="comparison-label">Total Responses</p>
+              <p style="font-size: 18px; font-weight: 600; color: var(--accent-primary);">${stats.total_responses}</p>
+            </div>
+            <div class="comparison-item">
+              <p class="comparison-label">Liberty Axis</p>
+              <div class="comparison-content">
+                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_liberty)}</strong>%</span>
+                <span class="comparison-values">Your Score: <span class="comparison-your-score">${r.liberty}%</span></span>
+              </div>
+              <div class="comparison-bar">
+                <div class="comparison-bar-user" style="width: ${r.liberty}%;"></div>
+              </div>
+            </div>
+            <div class="comparison-item">
+              <p class="comparison-label">Economy Axis</p>
+              <div class="comparison-content">
+                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_economic)}</strong>%</span>
+                <span class="comparison-values">Your Score: <span class="comparison-your-score">${r.economic}%</span></span>
+              </div>
+              <div class="comparison-bar">
+                <div class="comparison-bar-user" style="width: ${r.economic}%;"></div>
+              </div>
+            </div>
+            <div class="comparison-item">
+              <p class="comparison-label">Social Axis</p>
+              <div class="comparison-content">
+                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_social)}</strong>%</span>
+                <span class="comparison-values">Your Score: <span class="comparison-your-score">${r.social}%</span></span>
+              </div>
+              <div class="comparison-bar">
+                <div class="comparison-bar-user" style="width: ${r.social}%;"></div>
+              </div>
+            </div>
+            <div class="comparison-item">
+              <p class="comparison-label">Change Axis</p>
+              <div class="comparison-content">
+                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_change)}</strong>%</span>
+                <span class="comparison-values">Your Score: <span class="comparison-your-score">${r.change}%</span></span>
+              </div>
+              <div class="comparison-bar">
+                <div class="comparison-bar-user" style="width: ${r.change}%;"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
       document.getElementById('content').innerHTML = `
         <div class="result-box">
           <p class="result-label">Your Political Philosophy</p>
@@ -992,6 +1210,7 @@
                 <div class="axis-labels"><span>${a.left}</span><span>${a.right}</span></div>
               </div>`).join('')}
           </div>
+          ${comparisonHTML}
           <button class="btn btn-ghost restart-btn" onclick="restart()">Retake Quiz</button>
         </div>`;
     }
