@@ -1,6 +1,6 @@
-# Political Philosophy Quiz
+# Political Survey Platform
 
-An interactive quiz that classifies your political philosophy across four axes: Liberty, Economy, Social values, and Change orientation. Get your results and compare them to community averages.
+An interactive platform hosting multiple surveys that assess various aspects of political philosophy and values. Take surveys, get personalized results, and compare them to community averages.
 
 ## Local Development
 
@@ -49,7 +49,7 @@ The app creates a SQLite database (`survey_results.db`) on first run.
 
 ## Features
 
-- **20-question survey** - Thoughtful questions covering political philosophy
+- **Multiple surveys** - Thoughtful question sets covering various aspects of political philosophy
 - **Four-axis scoring** - Liberty, Economy, Social, and Change dimensions
 - **Philosophy classification** - Assigns one of 8 political philosophies
 - **Results comparison** - See how you compare to community averages
@@ -67,4 +67,4 @@ When backend is running:
 
 ## Static Hosting
 
-The quiz can also run on GitHub Pages or any static host at `index.html` without the backend. Results won't be collected but the quiz will function normally.
+The surveys can also run on GitHub Pages or any static host at `index.html` without the backend. Results won't be collected but the surveys will function normally.
