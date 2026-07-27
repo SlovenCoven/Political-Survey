@@ -4,42 +4,50 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Political Philosophy Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --surface-0: #f5f5f3;
-      --surface-1: #ededea;
+      --font-display: 'Playfair Display', serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --surface-0: #faf9f7;
+      --surface-1: #f4f2ed;
       --surface-2: #ffffff;
-      --text-primary: #1a1a18;
-      --text-secondary: #5f5e5a;
-      --text-muted: #9a9994;
-      --border: rgba(0,0,0,0.12);
-      --border-strong: rgba(0,0,0,0.22);
-      --border-accent: #185fa5;
-      --fill-accent: #378add;
-      --on-accent: #ffffff;
-      --bg-accent: #e6f1fb;
+      --surface-3: #f0ede7;
+      --text-primary: #1a1713;
+      --text-secondary: #5a574f;
+      --text-muted: #8a8179;
+      --border: rgba(26, 23, 19, 0.08);
+      --border-strong: rgba(26, 23, 19, 0.15);
+      --accent-primary: #c4933c;
+      --accent-secondary: #8b7355;
+      --accent-light: #e8dcc8;
+      --accent-lighter: #f5ede0;
       --text-danger: #a32d2d;
-      --radius: 8px;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.12);
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --surface-0: #1a1a18;
-        --surface-1: #252523;
-        --surface-2: #2e2e2b;
-        --text-primary: #f0efe9;
-        --text-secondary: #b4b2a9;
-        --text-muted: #6b6a65;
-        --border: rgba(255,255,255,0.1);
-        --border-strong: rgba(255,255,255,0.18);
-        --border-accent: #85b7eb;
-        --fill-accent: #378add;
-        --on-accent: #ffffff;
-        --bg-accent: #042c53;
-        --text-danger: #f09595;
+        --surface-0: #0f0d0b;
+        --surface-1: #1a1714;
+        --surface-2: #24201b;
+        --surface-3: #2e291f;
+        --text-primary: #f5f2ed;
+        --text-secondary: #c4beb3;
+        --text-muted: #8a8179;
+        --border: rgba(255, 255, 255, 0.08);
+        --border-strong: rgba(255, 255, 255, 0.15);
+        --accent-primary: #d4a85c;
+        --accent-secondary: #a89070;
+        --accent-light: #6b5d47;
+        --accent-lighter: #3d3527;
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.4);
       }
     }
 
@@ -51,73 +59,315 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 2rem 1rem 4rem;
+      padding: 3rem 1rem 4rem;
+      line-height: 1.6;
     }
 
-    .quiz-wrap { width: 100%; max-width: 620px; }
+    .quiz-wrap { 
+      width: 100%; 
+      max-width: 660px; 
+    }
 
-    header { margin-bottom: 2.5rem; }
-    header h1 { font-size: 22px; font-weight: 500; margin-bottom: 0.4rem; }
-    header p { font-size: 14px; color: var(--text-secondary); }
+    header { 
+      margin-bottom: 3.5rem;
+      text-align: center;
+    }
+    
+    header h1 { 
+      font-family: var(--font-display);
+      font-size: 48px; 
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    
+    header p { 
+      font-size: 16px; 
+      color: var(--text-secondary);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+    }
 
-    .progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-bottom: 2rem; }
-    .progress-fill { height: 100%; background: var(--fill-accent); border-radius: 2px; transition: width 0.4s ease; }
+    .progress-bar { 
+      height: 3px; 
+      background: var(--border); 
+      border-radius: 2px; 
+      margin-bottom: 3rem;
+      overflow: hidden;
+    }
+    
+    .progress-fill { 
+      height: 100%; 
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 2px; 
+      transition: width 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
 
-    .question-num { font-size: 12px; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.5rem; }
-    .question-text { font-size: 20px; font-weight: 500; line-height: 1.4; margin-bottom: 1.75rem; }
+    .question-num { 
+      font-size: 12px; 
+      color: var(--accent-primary);
+      letter-spacing: 0.1em; 
+      text-transform: uppercase; 
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    
+    .question-text { 
+      font-family: var(--font-display);
+      font-size: 28px; 
+      font-weight: 500;
+      line-height: 1.5;
+      margin-bottom: 2.5rem;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
 
-    .options { display: flex; flex-direction: column; gap: 10px; }
+    .options { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 14px;
+    }
+    
     .option-btn {
-      padding: 14px 18px;
+      padding: 18px 22px;
       background: var(--surface-2);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 15px;
+      border: 1.5px solid var(--border-strong);
+      border-radius: 12px;
+      font-size: 16px;
       color: var(--text-primary);
       cursor: pointer;
       text-align: left;
-      line-height: 1.5;
-      transition: border-color 0.15s, background 0.15s;
+      line-height: 1.6;
+      transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
       font-family: var(--font-sans);
+      font-weight: 400;
+      position: relative;
+      overflow: hidden;
     }
-    .option-btn:hover { border-color: var(--border-accent); background: var(--bg-accent); }
-    .option-btn.selected { border-color: var(--border-accent); background: var(--bg-accent); }
+    
+    .option-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--accent-light);
+      transition: left 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+      z-index: -1;
+    }
+    
+    .option-btn:hover {
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    
+    .option-btn.selected {
+      border-color: var(--accent-primary);
+      background: var(--accent-lighter);
+      box-shadow: inset 0 0 0 1px var(--accent-primary), var(--shadow-md);
+      color: var(--text-primary);
+    }
 
-    .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
-    .btn { padding: 10px 22px; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; font-family: var(--font-sans); transition: opacity 0.15s; }
-    .btn-primary { background: var(--fill-accent); color: var(--on-accent); border: none; }
-    .btn-primary:disabled { opacity: 0.4; cursor: default; }
-    .btn-ghost { background: transparent; border: 0.5px solid var(--border-strong); color: var(--text-secondary); }
-    .btn-ghost:hover { background: var(--surface-1); }
+    .nav { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-top: 2.5rem;
+      gap: 16px;
+    }
+    
+    .btn { 
+      padding: 12px 28px; 
+      border-radius: 10px; 
+      font-size: 14px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      font-family: var(--font-sans);
+      transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+      letter-spacing: 0.01em;
+      border: none;
+    }
+    
+    .btn-primary { 
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #ffffff;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn-primary:hover:not(:disabled) { 
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .btn-primary:disabled { 
+      opacity: 0.5; 
+      cursor: default;
+      transform: none;
+    }
+    
+    .btn-ghost { 
+      background: transparent; 
+      border: 1.5px solid var(--border-strong); 
+      color: var(--text-secondary);
+    }
+    
+    .btn-ghost:hover { 
+      background: var(--surface-1);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
 
-    .result-box { padding: 2rem; background: var(--surface-1); border-radius: 12px; border: 0.5px solid var(--border); }
-    .result-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; }
-    .result-title { font-size: 28px; font-weight: 500; color: var(--fill-accent); margin-bottom: 1rem; }
-    .result-desc { font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.5rem; }
-    .result-axes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
-    .axis-card { padding: 12px 14px; background: var(--surface-2); border-radius: var(--radius); border: 0.5px solid var(--border); }
-    .axis-name { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-    .axis-bar { height: 6px; background: var(--border); border-radius: 3px; margin-bottom: 6px; }
-    .axis-fill { height: 100%; border-radius: 3px; }
-    .axis-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); }
+    .result-box { 
+      padding: 2.5rem; 
+      background: var(--surface-2);
+      border-radius: 16px; 
+      border: 1px solid var(--border-strong);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(10px);
+    }
+    
+    .result-label { 
+      font-size: 12px; 
+      letter-spacing: 0.1em; 
+      text-transform: uppercase; 
+      color: var(--accent-primary);
+      margin-bottom: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .result-title { 
+      font-family: var(--font-display);
+      font-size: 36px; 
+      font-weight: 600;
+      color: var(--accent-primary);
+      margin-bottom: 1.2rem;
+      letter-spacing: -0.01em;
+    }
+    
+    .result-desc { 
+      font-size: 16px; 
+      color: var(--text-secondary); 
+      line-height: 1.8; 
+      margin-bottom: 2rem;
+      font-weight: 300;
+    }
+    
+    .result-axes { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 16px; 
+      margin-bottom: 2rem;
+    }
+    
+    .axis-card { 
+      padding: 16px 18px; 
+      background: var(--surface-3);
+      border-radius: 12px; 
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    
+    .axis-card:hover {
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .axis-name { 
+      font-size: 11px; 
+      color: var(--accent-primary);
+      text-transform: uppercase; 
+      letter-spacing: 0.08em; 
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    .axis-bar { 
+      height: 8px; 
+      background: var(--border); 
+      border-radius: 4px; 
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+    
+    .axis-fill { 
+      height: 100%; 
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      transition: width 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+    
+    .axis-labels { 
+      display: flex; 
+      justify-content: space-between; 
+      font-size: 11px; 
+      color: var(--text-muted);
+      font-weight: 500;
+    }
 
-    .loading { text-align: center; padding: 3rem 1rem; }
-    .spinner { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--fill-accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text { font-size: 15px; color: var(--text-secondary); }
-    .restart-btn { width: 100%; margin-top: 1rem; }
+    .loading { 
+      text-align: center; 
+      padding: 4rem 1rem;
+    }
+    
+    .spinner { 
+      width: 44px; 
+      height: 44px; 
+      border: 2.5px solid var(--border-strong); 
+      border-top-color: var(--accent-primary); 
+      border-radius: 50%; 
+      animation: spin 1s cubic-bezier(0.4, 0.0, 0.6, 1) infinite; 
+      margin: 0 auto 1.5rem;
+    }
+    
+    @keyframes spin { 
+      to { transform: rotate(360deg); } 
+    }
+    
+    .loading-text { 
+      font-size: 16px; 
+      color: var(--text-secondary);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+    }
+    
+    .restart-btn { 
+      width: 100%;
+      margin-top: 1rem;
+    }
 
     @media (max-width: 480px) {
-      .result-axes { grid-template-columns: 1fr; }
-      .question-text { font-size: 18px; }
+      header h1 {
+        font-size: 36px;
+      }
+      
+      .question-text { 
+        font-size: 24px;
+      }
+      
+      .result-axes { 
+        grid-template-columns: 1fr;
+      }
+      
+      .result-box {
+        padding: 2rem;
+      }
+      
+      .btn {
+        padding: 10px 20px;
+        font-size: 13px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="quiz-wrap">
     <header>
-      <h1>Political philosophy quiz</h1>
-      <p>20 questions to help identify your political worldview</p>
+      <h1>Political Philosophy Quiz</h1>
+      <p>Discover your worldview through 20 thoughtful questions</p>
     </header>
     <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
     <div id="content"></div>
@@ -127,26 +377,26 @@
     const ANTHROPIC_API_KEY = 'your-api-key-here';
 
     const questions = [
-      { q: "The government's primary role should be to...", options: ["Protect individual rights and freedoms with minimal interference", "Ensure equal opportunity and reduce systemic disadvantages", "Balance both individual liberty and collective welfare"] },
-      { q: "When it comes to the economy, I believe...", options: ["Free markets naturally lead to the best outcomes for everyone", "Markets need strong regulation to prevent exploitation", "We should balance market freedom with social protections"] },
-      { q: "On immigration, the priority should be...", options: ["Open borders — people should be free to move where they choose", "A controlled system that balances compassion with national interests", "Strict immigration policies to protect jobs and culture"] },
-      { q: "Taxes should primarily be used to...", options: ["Be kept as low as possible so people keep their earnings", "Fund essential services like healthcare, education, and infrastructure", "Progressive rates that reduce wealth inequality"] },
-      { q: "On social issues like marriage equality and drug policy, I think...", options: ["Individuals should have maximum personal freedom in lifestyle choices", "Society should protect marginalized communities while respecting choice", "Traditional values should guide policy on personal matters"] },
-      { q: "Climate change policy should...", options: ["Be left to market innovation rather than government mandates", "Involve moderate regulations and international cooperation", "Be prioritized above economic concerns"] },
+      { q: "The government's primary role should be to...", options: ["Protect individual rights and freedoms with minimal interference", "Ensure equal opportunity and reduce systemic disadvantages", "Serve the collective good and maintain social order"] },
+      { q: "When it comes to the economy, I believe...", options: ["Free markets naturally lead to the best outcomes for everyone", "Markets need strong regulation to prevent exploitation", "We should have a balance between market freedom and government guidance"] },
+      { q: "On immigration, the priority should be...", options: ["Open borders — people should be free to move where they choose", "A controlled system that balances compassion with national interests", "Restrict immigration to protect domestic workers and culture"] },
+      { q: "Taxes should primarily be used to...", options: ["Be kept as low as possible so people keep their earnings", "Fund essential services like healthcare, education, and infrastructure", "Redistribute wealth to reduce inequality"] },
+      { q: "On social issues like marriage equality and drug policy, I think...", options: ["Individuals should have maximum personal freedom in lifestyle choices", "Society should protect marginalized groups while respecting traditions", "Traditional values and established norms should be prioritized"] },
+      { q: "Climate change policy should...", options: ["Be left to market innovation rather than government mandates", "Involve moderate regulations and international cooperation", "Be prioritized with aggressive government intervention"] },
       { q: "Criminal justice should focus on...", options: ["Protecting individual rights from state overreach", "Rehabilitation and addressing root causes of crime", "Swift punishment as a deterrent to crime"] },
-      { q: "Healthcare should be...", options: ["A free market good where competition drives down costs", "A right, provided through a public-private mixed system", "Controlled primarily by government"] },
-      { q: "My view on political authority is...", options: ["The less government, the better — people can govern themselves", "Government is a necessary tool for creating a just society", "Strong central authority is needed for stability"] },
-      { q: "When tradition and progress conflict, I think...", options: ["Both deserve equal scrutiny before acting", "Progress and reform should take priority over outdated norms", "Tradition contains wisdom that shouldn't be abandoned"] },
+      { q: "Healthcare should be...", options: ["A free market good where competition drives down costs", "A right, provided through a public-private mixed system", "Controlled primarily by government for equity"] },
+      { q: "My view on political authority is...", options: ["The less government, the better — people can govern themselves", "Government is a necessary tool for creating a just society", "Strong leadership and order are essential for society"] },
+      { q: "When tradition and progress conflict, I think...", options: ["Both deserve equal scrutiny before acting", "Progress and reform should take priority over outdated norms", "Tradition contains wisdom that shouldn't be discarded lightly"] },
       { q: "Gun ownership should be...", options: ["An absolute right with minimal restrictions", "Allowed with reasonable background checks and regulations", "Tightly regulated to protect public safety"] },
-      { q: "The best way to address poverty is...", options: ["Remove barriers to entrepreneurship and economic freedom", "Expand social safety nets and job training programs", "Encourage community and religious charity"] },
-      { q: "On foreign policy, I believe the country should...", options: ["Stay out of other nations' affairs and focus on itself", "Engage diplomatically and through multilateral institutions", "Maintain military strength and strategic interests"] },
-      { q: "Public education should...", options: ["Be opened to competition through school choice and vouchers", "Be well-funded and equitable across all communities", "Emphasize civic values, history, and traditional knowledge"] },
-      { q: "When it comes to corporations and big business...", options: ["They drive innovation and should face minimal regulation", "They need oversight to prevent monopolies and protect workers", "They should be strictly controlled to serve public interest"] },
-      { q: "Drug policy should...", options: ["Fully decriminalize or legalize all drugs as a personal freedom", "Decriminalize personal use while targeting trafficking", "Maintain strict laws to protect public health"] },
+      { q: "The best way to address poverty is...", options: ["Remove barriers to entrepreneurship and economic freedom", "Expand social safety nets and job training programs", "Encourage community and religious organizations to help"] },
+      { q: "On foreign policy, I believe the country should...", options: ["Stay out of other nations' affairs and focus on itself", "Engage diplomatically and through multilateral institutions", "Assert its interests and maintain military strength"] },
+      { q: "Public education should...", options: ["Be opened to competition through school choice and vouchers", "Be well-funded and equitable across all communities", "Emphasize civic values, discipline, and traditional subjects"] },
+      { q: "When it comes to corporations and big business...", options: ["They drive innovation and should face minimal regulation", "They need oversight to prevent monopolies and protect workers", "They should serve the public interest above profit"] },
+      { q: "Drug policy should...", options: ["Fully decriminalize or legalize all drugs as a personal freedom", "Decriminalize personal use while targeting trafficking", "Maintain strict laws to prevent drug abuse"] },
       { q: "The gap between rich and poor is...", options: ["A natural result of differing talent and effort", "A problem that requires government intervention to fix", "Concerning but best addressed through charity and community"] },
-      { q: "Free speech should be...", options: ["Absolute — the government should never restrict speech", "Protected but with limits on harassment and incitement", "Balanced with responsibilities to prevent harm"] },
-      { q: "On religion and government, I believe...", options: ["The state should be fully secular and religion kept private", "Faith can inform values but shouldn't dictate law", "Religious and traditional values should guide policy"] },
-      { q: "The best description of my overall political outlook is...", options: ["I want maximum freedom for individuals from all authority", "I want a fair, reformed system that works for everyone", "I want a strong society built on tradition and order"] }
+      { q: "Free speech should be...", options: ["Absolute — the government should never restrict speech", "Protected but with limits on harassment and incitement", "Balanced with responsibility and social consideration"] },
+      { q: "On religion and government, I believe...", options: ["The state should be fully secular and religion kept private", "Faith can inform values but shouldn't dictate law", "Religious and moral values should guide public policy"] },
+      { q: "The best description of my overall political outlook is...", options: ["I want maximum freedom for individuals from all authority", "I want a fair, reformed system that works for everyone", "I want strong institutions that preserve order and values"] }
     ];
 
     let answers = [];
@@ -169,7 +419,7 @@
         <div class="nav">
           ${current > 0 ? `<button class="btn btn-ghost" onclick="back()">← Back</button>` : `<span></span>`}
           <button class="btn btn-primary" onclick="next()" ${answers[current]==null?'disabled':''}>
-            ${current === questions.length - 1 ? 'See results' : 'Next →'}
+            ${current === questions.length - 1 ? 'See Results' : 'Next →'}
           </button>
         </div>`;
     }
@@ -183,7 +433,7 @@
       document.getElementById('content').innerHTML = `
         <div class="loading">
           <div class="spinner"></div>
-          <p class="loading-text">Analyzing your answers...</p>
+          <p class="loading-text">Analyzing your responses...</p>
         </div>`;
       analyzeAnswers();
     }
@@ -203,7 +453,7 @@
             max_tokens: 1000,
             messages: [{
               role: 'user',
-              content: `Based on these 20 quiz answers, determine the person's political philosophy. Return ONLY valid JSON, no markdown, no backticks:\n\n${summary}\n\nReturn: {"label":"<2-4 word political philosophy>","description":"<2-3 sentence description>","liberty":<0-100>,"economic":<0-100>,"social":<0-100>,"change":<0-100>}`
+              content: `Based on these 20 quiz answers, determine the person's political philosophy. Return ONLY valid JSON, no markdown, no backticks:\n\n${summary}\n\nReturn: {"label":"<2-4 word label>","description":"<2-3 sentences>","liberty":<0-100>,"economic":<0-100>,"social":<0-100>,"change":<0-100>}`
             }]
           })
         });
@@ -217,15 +467,15 @@
 
     function renderResult(r) {
       const axisData = [
-        { name: 'Liberty', left: 'Authoritarian', right: 'Libertarian', val: r.liberty, color: '#378ADD' },
-        { name: 'Economy', left: 'Free market', right: 'Socialist', val: r.economic, color: '#1D9E75' },
-        { name: 'Social', left: 'Conservative', right: 'Progressive', val: r.social, color: '#7F77DD' },
-        { name: 'Change', left: 'Status quo', right: 'Radical reform', val: r.change, color: '#D85A30' }
+        { name: 'Liberty', left: 'Authoritarian', right: 'Libertarian', val: r.liberty, color: '#c4933c' },
+        { name: 'Economy', left: 'Free Market', right: 'Socialist', val: r.economic, color: '#8b7355' },
+        { name: 'Social', left: 'Conservative', right: 'Progressive', val: r.social, color: '#a89070' },
+        { name: 'Change', left: 'Status Quo', right: 'Reform', val: r.change, color: '#d4a85c' }
       ];
       document.getElementById('progress').style.width = '100%';
       document.getElementById('content').innerHTML = `
         <div class="result-box">
-          <p class="result-label">Your political philosophy</p>
+          <p class="result-label">Your Political Philosophy</p>
           <p class="result-title">${r.label}</p>
           <p class="result-desc">${r.description}</p>
           <div class="result-axes">
@@ -236,14 +486,14 @@
                 <div class="axis-labels"><span>${a.left}</span><span>${a.right}</span></div>
               </div>`).join('')}
           </div>
-          <button class="btn btn-ghost restart-btn" onclick="restart()">Retake quiz</button>
+          <button class="btn btn-ghost restart-btn" onclick="restart()">Retake Quiz</button>
         </div>`;
     }
 
     function renderError() {
       document.getElementById('content').innerHTML = `
         <div class="loading">
-          <p class="loading-text" style="color:var(--text-danger)">Something went wrong. Check your API key and try again.</p>
+          <p class="loading-text" style="color:var(--text-danger)">Something went wrong. Please check your API key and try again.</p>
           <button class="btn btn-ghost" style="margin-top:1rem" onclick="restart()">Restart</button>
         </div>`;
     }
