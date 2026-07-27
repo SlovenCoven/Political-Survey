@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Political Philosophy Quiz</title>
+  <title>Survey Suite</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -90,6 +90,38 @@
       letter-spacing: 0.02em;
     }
 
+    .survey-selector {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .survey-btn {
+      padding: 10px 20px;
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface-2);
+      color: var(--text-secondary);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      font-family: var(--font-sans);
+    }
+
+    .survey-btn:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .survey-btn.active {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #ffffff;
+      border-color: var(--accent-primary);
+    }
+
     .progress-bar { 
       height: 3px; 
       background: var(--border); 
@@ -170,6 +202,50 @@
       background: var(--accent-lighter);
       box-shadow: inset 0 0 0 1px var(--accent-primary), var(--shadow-md);
       color: var(--text-primary);
+    }
+
+    .likert-scale {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 2rem;
+    }
+
+    .likert-btn {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface-2);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+    }
+
+    .likert-btn:hover {
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .likert-btn.selected {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #ffffff;
+      border-color: var(--accent-primary);
+    }
+
+    .likert-labels {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 1rem;
     }
 
     .nav { 
@@ -308,6 +384,13 @@
       font-weight: 500;
     }
 
+    .axis-score {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-primary);
+      margin-top: 6px;
+    }
+
     .comparison-section {
       margin-top: 2.5rem;
       padding-top: 2rem;
@@ -413,15 +496,33 @@
         flex-direction: column;
         align-items: flex-start;
       }
+
+      .likert-scale {
+        grid-template-columns: repeat(5, 1fr);
+      }
+
+      .survey-selector {
+        flex-direction: column;
+      }
+
+      .survey-btn {
+        flex: 1;
+      }
     }
   </style>
 </head>
 <body>
   <div class="quiz-wrap">
     <header>
-      <h1>Political Philosophy Quiz</h1>
-      <p>Discover your worldview through 20 thoughtful questions</p>
+      <h1 id="header-title">Survey Suite</h1>
+      <p id="header-desc">Choose a survey to explore</p>
     </header>
+
+    <div id="survey-selector" class="survey-selector">
+      <button class="survey-btn active" onclick="selectSurvey('political')">Political Philosophy</button>
+      <button class="survey-btn" onclick="selectSurvey('big5')">Big 5 Personality</button>
+    </div>
+
     <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
     <div id="content"></div>
   </div>
@@ -429,7 +530,8 @@
   <script>
     const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
 
-    const questions = [
+    // Political Philosophy Quiz Data
+    const politicalQuestions = [
       {
         q: "The government's primary role should be to...",
         options: ["Protect individual rights and freedoms with minimal interference", "Ensure equal opportunity and reduce systemic disadvantages", "Balance protecting rights with ensuring fairness"],
@@ -447,12 +549,12 @@
       },
       {
         q: "Taxes should primarily be used to...",
-        options: ["Be kept as low as possible so people keep their earnings", "Fund essential services like healthcare, education, and infrastructure", "Be moderate, funding key services without excess"],
+        options: ["Be kept as low as possible so people keep their earnings", "Fund essential services like healthcare, education, and infrastructure", "Be moderate, funding key services without over-taxation"],
         axes: { liberty: [2, 0, 1], economic: [2, 0, 1], social: [0, 2, 1], change: [0, 2, 1] }
       },
       {
         q: "On social issues like marriage equality and drug policy, I think...",
-        options: ["Individuals should have maximum personal freedom in lifestyle choices", "Society should protect marginalized groups while respecting tradition", "Government should stay neutral on personal matters"],
+        options: ["Individuals should have maximum personal freedom in lifestyle choices", "Society should protect marginalized groups while respecting tradition", "Government should stay neutral on personal lifestyle choices"],
         axes: { liberty: [2, 0, 1], economic: [1, 1, 1], social: [2, 0, 1], change: [2, 0, 1] }
       },
       {
@@ -472,7 +574,7 @@
       },
       {
         q: "My view on political authority is...",
-        options: ["The less government, the better — people can govern themselves", "Government is a necessary tool for creating a just society", "Strong leadership is needed to maintain order and prosperity"],
+        options: ["The less government, the better — people can govern themselves", "Government is a necessary tool for creating a just society", "Strong leadership is needed to maintain order"],
         axes: { liberty: [2, 1, 0], economic: [2, 1, 0], social: [0, 2, 0], change: [0, 2, 0] }
       },
       {
@@ -497,7 +599,7 @@
       },
       {
         q: "Public education should...",
-        options: ["Be opened to competition through school choice and vouchers", "Be well-funded and equitable across all communities", "Emphasize civic values, discipline, and traditional curriculum"],
+        options: ["Be opened to competition through school choice and vouchers", "Be well-funded and equitable across all communities", "Emphasize civic values, discipline, and traditional curricula"],
         axes: { liberty: [2, 0, 1], economic: [2, 0, 1], social: [0, 2, 0], change: [0, 2, 0] }
       },
       {
@@ -532,23 +634,131 @@
       }
     ];
 
+    // Big 5 Personality Test Data
+    const big5Questions = [
+      { q: "I am the life of the party.", traits: { extroversion: 1, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I feel little concern for others.", traits: { extroversion: 0, agreeableness: -1, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I am always prepared.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 1, neuroticism: 0, openness: 0 } },
+      { q: "I get stressed out easily.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 1, openness: 0 } },
+      { q: "I have a rich vocabulary.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 1 } },
+      { q: "I don't talk a lot.", traits: { extroversion: -1, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I am interested in people.", traits: { extroversion: 0, agreeableness: 1, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I leave my belongings around.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: -1, neuroticism: 0, openness: 0 } },
+      { q: "I am relaxed most of the time.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: -1, openness: 0 } },
+      { q: "I have difficulty understanding abstract ideas.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: -1 } },
+      { q: "I feel comfortable around people.", traits: { extroversion: 1, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I insult people.", traits: { extroversion: 0, agreeableness: -1, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I pay attention to details.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 1, neuroticism: 0, openness: 0 } },
+      { q: "I worry about things.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 1, openness: 0 } },
+      { q: "I have a vivid imagination.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 1 } },
+      { q: "I keep in the background.", traits: { extroversion: -1, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I sympathize with others' feelings.", traits: { extroversion: 0, agreeableness: 1, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I make a mess of things.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: -1, neuroticism: 0, openness: 0 } },
+      { q: "I seldom feel blue.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: -1, openness: 0 } },
+      { q: "I am not interested in abstract ideas.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: -1 } },
+      { q: "I start conversations.", traits: { extroversion: 1, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I am not interested in other people's problems.", traits: { extroversion: 0, agreeableness: -1, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I get chores done right away.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 1, neuroticism: 0, openness: 0 } },
+      { q: "I am easily disturbed.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 1, openness: 0 } },
+      { q: "I have excellent ideas.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 1 } },
+      { q: "I have little to say.", traits: { extroversion: -1, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I have a soft heart.", traits: { extroversion: 0, agreeableness: 1, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I often forget to put things back in their proper place.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: -1, neuroticism: 0, openness: 0 } },
+      { q: "I get upset easily.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 1, openness: 0 } },
+      { q: "I do not have a good imagination.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: -1 } },
+      { q: "I talk to a lot of different people at parties.", traits: { extroversion: 1, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I am not really interested in others.", traits: { extroversion: 0, agreeableness: -1, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I like order.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 1, neuroticism: 0, openness: 0 } },
+      { q: "I change my mood a lot.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 1, openness: 0 } },
+      { q: "I am quick to understand things.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 1 } },
+      { q: "I don't like to draw attention to myself.", traits: { extroversion: -1, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I take time out for others.", traits: { extroversion: 0, agreeableness: 1, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I shirk my duties.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: -1, neuroticism: 0, openness: 0 } },
+      { q: "I have frequent mood swings.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 1, openness: 0 } },
+      { q: "I use difficult words.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 1 } },
+      { q: "I don't mind being the center of attention.", traits: { extroversion: 1, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I feel others' emotions.", traits: { extroversion: 0, agreeableness: 1, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I follow a schedule.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 1, neuroticism: 0, openness: 0 } },
+      { q: "I get irritated easily.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 1, openness: 0 } },
+      { q: "I spend time reflecting on things.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 1 } },
+      { q: "I am quiet around strangers.", traits: { extroversion: -1, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I make people feel at ease.", traits: { extroversion: 0, agreeableness: 1, conscientiousness: 0, neuroticism: 0, openness: 0 } },
+      { q: "I am exacting in my work.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 1, neuroticism: 0, openness: 0 } },
+      { q: "I often feel blue.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 1, openness: 0 } },
+      { q: "I am full of ideas.", traits: { extroversion: 0, agreeableness: 0, conscientiousness: 0, neuroticism: 0, openness: 1 } }
+    ];
+
+    let currentSurvey = 'political';
     let answers = [];
     let current = 0;
 
+    function selectSurvey(survey) {
+      currentSurvey = survey;
+      answers = [];
+      current = 0;
+      
+      document.querySelectorAll('.survey-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      if (survey === 'political') {
+        document.getElementById('header-title').textContent = 'Political Philosophy Quiz';
+        document.getElementById('header-desc').textContent = 'Discover your worldview through 20 thoughtful questions';
+      } else {
+        document.getElementById('header-title').textContent = 'Big 5 Personality Test';
+        document.getElementById('header-desc').textContent = 'Understand your personality across 5 dimensions in 50 questions';
+      }
+      
+      render();
+    }
+
     function render() {
+      const questions = currentSurvey === 'political' ? politicalQuestions : big5Questions;
       if (current < questions.length) renderQuestion();
       else renderLoading();
     }
 
     function renderQuestion() {
+      const questions = currentSurvey === 'political' ? politicalQuestions : big5Questions;
       document.getElementById('progress').style.width = (current / questions.length * 100) + '%';
       const q = questions[current];
+      
+      let optionsHTML;
+      if (currentSurvey === 'political') {
+        optionsHTML = `
+          <div class="options">
+            ${q.options.map((o, i) => `<button class="option-btn${answers[current]===i?' selected':''}" onclick="select(${i})">${o}</button>`).join('')}
+          </div>`;
+      } else {
+        optionsHTML = `
+          <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 1.5rem;">I... ${q.q}</p>
+          <div class="likert-labels">
+            <span>Disagree</span>
+            <span>Slightly<br>Disagree</span>
+            <span>Neutral</span>
+            <span>Slightly<br>Agree</span>
+            <span>Agree</span>
+          </div>
+          <div class="likert-scale">
+            ${[1, 2, 3, 4, 5].map(i => `<button class="likert-btn${answers[current]===i-1?' selected':''}" onclick="select(${i-1})">${i}</button>`).join('')}
+          </div>`;
+      }
+
       document.getElementById('content').innerHTML = `
         <p class="question-num">Question ${current + 1} of ${questions.length}</p>
-        <p class="question-text">${q.q}</p>
-        <div class="options">
-          ${q.options.map((o, i) => `<button class="option-btn${answers[current]===i?' selected':''}" onclick="select(${i})">${o}</button>`).join('')}
-        </div>
+        <p class="question-text">${currentSurvey === 'political' ? q.q : 'I...'}</p>
+        ${currentSurvey === 'political' ? optionsHTML : `
+          <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 1.5rem;">${q.q}</p>
+          <div class="likert-labels">
+            <span>Disagree</span>
+            <span>Slightly<br>Disagree</span>
+            <span>Neutral</span>
+            <span>Slightly<br>Agree</span>
+            <span>Agree</span>
+          </div>
+          <div class="likert-scale">
+            ${[1, 2, 3, 4, 5].map(i => `<button class="likert-btn${answers[current]===i-1?' selected':''}" onclick="select(${i-1})">${i}</button>`).join('')}
+          </div>
+        `}
         <div class="nav">
           ${current > 0 ? `<button class="btn btn-ghost" onclick="back()">← Back</button>` : `<span></span>`}
           <button class="btn btn-primary" onclick="next()" ${answers[current]==null?'disabled':''}>
@@ -572,9 +782,17 @@
     }
 
     function analyzeAnswers() {
+      if (currentSurvey === 'political') {
+        analyzePolitical();
+      } else {
+        analyzeBig5();
+      }
+    }
+
+    function analyzePolitical() {
       const scores = { liberty: 0, economic: 0, social: 0, change: 0 };
       
-      questions.forEach((q, i) => {
+      politicalQuestions.forEach((q, i) => {
         const answerIdx = answers[i];
         Object.keys(scores).forEach(axis => {
           if (q.axes && q.axes[axis] !== undefined) {
@@ -590,7 +808,7 @@
       });
 
       const result = classifyPhilosophy(normalizedScores);
-      renderResult({ ...result, ...normalizedScores });
+      renderPoliticalResult({ ...result, ...normalizedScores });
     }
 
     function classifyPhilosophy(scores) {
@@ -645,41 +863,113 @@
       }
     }
 
-    async function fetchComparison(scores) {
-      try {
-        const statsResponse = await fetch(`${API_BASE}/api/stats`);
-        
-        if (!statsResponse.ok) {
-          return null;
-        }
+    function analyzeBig5() {
+      const scores = {
+        extroversion: 0,
+        agreeableness: 0,
+        conscientiousness: 0,
+        neuroticism: 0,
+        openness: 0
+      };
 
-        const stats = await statsResponse.json();
-        return stats;
-      } catch (error) {
-        console.log('Backend not available - comparison data will not be shown');
-        return null;
-      }
-    }
+      // Map Likert responses (0-4) to agreement scale for scoring
+      // 0 = Disagree, 1 = Slightly disagree, 2 = Neutral, 3 = Slightly agree, 4 = Agree
+      const likertMap = [1, 2, 3, 4, 5];
 
-    async function saveResult(result) {
-      try {
-        await fetch(`${API_BASE}/api/results`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            label: result.label,
-            liberty: result.liberty,
-            economic: result.economic,
-            social: result.social,
-            change: result.change
-          })
+      big5Questions.forEach((q, i) => {
+        const response = likertMap[answers[i]];
+        Object.keys(scores).forEach(trait => {
+          if (q.traits[trait] !== 0) {
+            if (q.traits[trait] === 1) {
+              scores[trait] += response;
+            } else if (q.traits[trait] === -1) {
+              scores[trait] += (6 - response);
+            }
+          }
         });
-      } catch (error) {
-        console.log('Could not save results to backend');
-      }
+      });
+
+      // Calculate percentages (0-40 scale, convert to 0-100)
+      const percentages = {};
+      Object.keys(scores).forEach(trait => {
+        percentages[trait] = Math.round((scores[trait] / 40) * 100);
+      });
+
+      renderBig5Result({ scores, percentages });
     }
 
-    async function renderResult(r) {
+    function renderBig5Result(data) {
+      const { scores, percentages } = data;
+
+      const traitDescriptions = {
+        extroversion: "How outgoing, sociable, and energetic you are",
+        agreeableness: "How compassionate, cooperative, and considerate you are",
+        conscientiousness: "How organized, disciplined, and reliable you are",
+        neuroticism: "How prone to stress, anxiety, and negative emotions you are",
+        openness: "How curious, imaginative, and open to new experiences you are"
+      };
+
+      const traitInterpretations = {
+        extroversion: {
+          high: "You are very outgoing and energetic, enjoying social interaction and being the center of attention.",
+          low: "You prefer intimate gatherings and solitude, finding large social events draining."
+        },
+        agreeableness: {
+          high: "You are compassionate and cooperative, prioritizing harmony and helping others.",
+          low: "You are independent and direct, valuing honesty even when it might hurt feelings."
+        },
+        conscientiousness: {
+          high: "You are organized and disciplined, taking pride in your work and planning ahead.",
+          low: "You are flexible and spontaneous, preferring to go with the flow."
+        },
+        neuroticism: {
+          high: "You experience frequent mood changes and stress easily, feeling emotions intensely.",
+          low: "You are emotionally stable and remain calm under pressure."
+        },
+        openness: {
+          high: "You are imaginative and curious, enjoying new experiences and abstract thinking.",
+          low: "You prefer familiar routines and practical, concrete thinking."
+        }
+      };
+
+      const axisData = [
+        { name: 'Extroversion', desc: traitDescriptions.extroversion, val: percentages.extroversion, score: scores.extroversion },
+        { name: 'Agreeableness', desc: traitDescriptions.agreeableness, val: percentages.agreeableness, score: scores.agreeableness },
+        { name: 'Conscientiousness', desc: traitDescriptions.conscientiousness, val: percentages.conscientiousness, score: scores.conscientiousness },
+        { name: 'Neuroticism', desc: traitDescriptions.neuroticism, val: percentages.neuroticism, score: scores.neuroticism },
+        { name: 'Openness', desc: traitDescriptions.openness, val: percentages.openness, score: scores.openness }
+      ];
+
+      document.getElementById('progress').style.width = '100%';
+      document.getElementById('content').innerHTML = `
+        <div class="result-box">
+          <p class="result-label">Your Big 5 Profile</p>
+          <p class="result-title">Personality Analysis</p>
+          <p class="result-desc">Your personality across the five major dimensions, based on 50 comprehensive questions.</p>
+          <div style="display: grid; gap: 1.5rem;">
+            ${axisData.map(a => `
+              <div class="axis-card">
+                <p class="axis-name">${a.name}</p>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 1rem;">${a.desc}</p>
+                <div class="axis-bar"><div class="axis-fill" style="width:${a.val}%;"></div></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                  <div class="axis-labels" style="flex: 1; font-size: 10px;">
+                    <span>Low</span>
+                    <span>High</span>
+                  </div>
+                  <div class="axis-score">${a.score}/40</div>
+                </div>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 0.8rem; font-style: italic;">
+                  ${a.val > 60 ? traitInterpretations[a.name.toLowerCase()].high : a.val < 40 ? traitInterpretations[a.name.toLowerCase()].low : 'You score in the middle range, showing balance in this trait.'}
+                </p>
+              </div>
+            `).join('')}
+          </div>
+          <button class="btn btn-ghost restart-btn" onclick="restart()">Retake Test</button>
+        </div>`;
+    }
+
+    async function renderPoliticalResult(r) {
       const axisData = [
         { name: 'Liberty', left: 'Authoritarian', right: 'Libertarian', val: r.liberty, color: '#c4933c' },
         { name: 'Economy', left: 'Socialist', right: 'Capitalist', val: r.economic, color: '#8b7355' },
@@ -687,55 +977,8 @@
         { name: 'Change', left: 'Status Quo', right: 'Reform', val: r.change, color: '#d4a85c' }
       ];
 
-      // Save result to backend
-      await saveResult(r);
-
-      // Fetch comparison data
-      const stats = await fetchComparison(r);
-
       document.getElementById('progress').style.width = '100%';
       
-      let comparisonHTML = '';
-      if (stats && stats.total_responses > 0) {
-        comparisonHTML = `
-          <div class="comparison-section">
-            <p class="comparison-title">How You Compare</p>
-            <div class="comparison-item">
-              <p class="comparison-label">Total Responses</p>
-              <p style="font-size: 18px; font-weight: 600; color: var(--accent-primary);">${stats.total_responses}</p>
-            </div>
-            <div class="comparison-item">
-              <p class="comparison-label">Liberty Axis</p>
-              <div class="comparison-content">
-                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_liberty)}</strong>%</span>
-                <span class="comparison-values">Your Score: <span class="comparison-your-score">${r.liberty}%</span></span>
-              </div>
-            </div>
-            <div class="comparison-item">
-              <p class="comparison-label">Economy Axis</p>
-              <div class="comparison-content">
-                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_economic)}</strong>%</span>
-                <span class="comparison-values">Your Score: <span class="comparison-your-score">${r.economic}%</span></span>
-              </div>
-            </div>
-            <div class="comparison-item">
-              <p class="comparison-label">Social Axis</p>
-              <div class="comparison-content">
-                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_social)}</strong>%</span>
-                <span class="comparison-values">Your Score: <span class="comparison-your-score">${r.social}%</span></span>
-              </div>
-            </div>
-            <div class="comparison-item">
-              <p class="comparison-label">Change Axis</p>
-              <div class="comparison-content">
-                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_change)}</strong>%</span>
-                <span class="comparison-values">Your Score: <span class="comparison-your-score">${r.change}%</span></span>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
       document.getElementById('content').innerHTML = `
         <div class="result-box">
           <p class="result-label">Your Political Philosophy</p>
@@ -749,7 +992,6 @@
                 <div class="axis-labels"><span>${a.left}</span><span>${a.right}</span></div>
               </div>`).join('')}
           </div>
-          ${comparisonHTML}
           <button class="btn btn-ghost restart-btn" onclick="restart()">Retake Quiz</button>
         </div>`;
     }
