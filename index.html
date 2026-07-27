@@ -308,6 +308,54 @@
       font-weight: 500;
     }
 
+    .comparison-section {
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .comparison-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+    }
+
+    .comparison-item {
+      padding: 14px;
+      background: var(--surface-3);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .comparison-label {
+      font-size: 12px;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .comparison-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .comparison-values {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .comparison-your-score {
+      font-weight: 600;
+      color: var(--accent-primary);
+    }
+
     .loading { 
       text-align: center; 
       padding: 4rem 1rem;
@@ -360,6 +408,11 @@
         padding: 10px 20px;
         font-size: 13px;
       }
+
+      .comparison-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
@@ -374,6 +427,8 @@
   </div>
 
   <script>
+    const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+
     const questions = [
       {
         q: "The government's primary role should be to...",
@@ -392,12 +447,12 @@
       },
       {
         q: "Taxes should primarily be used to...",
-        options: ["Be kept as low as possible so people keep their earnings", "Fund essential services like healthcare, education, and infrastructure", "Be moderate, funding key services without excess burden"],
+        options: ["Be kept as low as possible so people keep their earnings", "Fund essential services like healthcare, education, and infrastructure", "Be moderate, funding key services without excess"],
         axes: { liberty: [2, 0, 1], economic: [2, 0, 1], social: [0, 2, 1], change: [0, 2, 1] }
       },
       {
         q: "On social issues like marriage equality and drug policy, I think...",
-        options: ["Individuals should have maximum personal freedom in lifestyle choices", "Society should protect marginalized groups while respecting tradition", "Government should stay neutral on personal lifestyle matters"],
+        options: ["Individuals should have maximum personal freedom in lifestyle choices", "Society should protect marginalized groups while respecting tradition", "Government should stay neutral on personal matters"],
         axes: { liberty: [2, 0, 1], economic: [1, 1, 1], social: [2, 0, 1], change: [2, 0, 1] }
       },
       {
@@ -417,7 +472,7 @@
       },
       {
         q: "My view on political authority is...",
-        options: ["The less government, the better — people can govern themselves", "Government is a necessary tool for creating a just society", "Strong leadership is needed to maintain order and progress"],
+        options: ["The less government, the better — people can govern themselves", "Government is a necessary tool for creating a just society", "Strong leadership is needed to maintain order and prosperity"],
         axes: { liberty: [2, 1, 0], economic: [2, 1, 0], social: [0, 2, 0], change: [0, 2, 0] }
       },
       {
@@ -590,14 +645,97 @@
       }
     }
 
-    function renderResult(r) {
+    async function fetchComparison(scores) {
+      try {
+        const statsResponse = await fetch(`${API_BASE}/api/stats`);
+        
+        if (!statsResponse.ok) {
+          return null;
+        }
+
+        const stats = await statsResponse.json();
+        return stats;
+      } catch (error) {
+        console.log('Backend not available - comparison data will not be shown');
+        return null;
+      }
+    }
+
+    async function saveResult(result) {
+      try {
+        await fetch(`${API_BASE}/api/results`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            label: result.label,
+            liberty: result.liberty,
+            economic: result.economic,
+            social: result.social,
+            change: result.change
+          })
+        });
+      } catch (error) {
+        console.log('Could not save results to backend');
+      }
+    }
+
+    async function renderResult(r) {
       const axisData = [
         { name: 'Liberty', left: 'Authoritarian', right: 'Libertarian', val: r.liberty, color: '#c4933c' },
         { name: 'Economy', left: 'Socialist', right: 'Capitalist', val: r.economic, color: '#8b7355' },
         { name: 'Social', left: 'Conservative', right: 'Progressive', val: r.social, color: '#a89070' },
         { name: 'Change', left: 'Status Quo', right: 'Reform', val: r.change, color: '#d4a85c' }
       ];
+
+      // Save result to backend
+      await saveResult(r);
+
+      // Fetch comparison data
+      const stats = await fetchComparison(r);
+
       document.getElementById('progress').style.width = '100%';
+      
+      let comparisonHTML = '';
+      if (stats && stats.total_responses > 0) {
+        comparisonHTML = `
+          <div class="comparison-section">
+            <p class="comparison-title">How You Compare</p>
+            <div class="comparison-item">
+              <p class="comparison-label">Total Responses</p>
+              <p style="font-size: 18px; font-weight: 600; color: var(--accent-primary);">${stats.total_responses}</p>
+            </div>
+            <div class="comparison-item">
+              <p class="comparison-label">Liberty Axis</p>
+              <div class="comparison-content">
+                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_liberty)}</strong>%</span>
+                <span class="comparison-values">Your Score: <span class="comparison-your-score">${r.liberty}%</span></span>
+              </div>
+            </div>
+            <div class="comparison-item">
+              <p class="comparison-label">Economy Axis</p>
+              <div class="comparison-content">
+                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_economic)}</strong>%</span>
+                <span class="comparison-values">Your Score: <span class="comparison-your-score">${r.economic}%</span></span>
+              </div>
+            </div>
+            <div class="comparison-item">
+              <p class="comparison-label">Social Axis</p>
+              <div class="comparison-content">
+                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_social)}</strong>%</span>
+                <span class="comparison-values">Your Score: <span class="comparison-your-score">${r.social}%</span></span>
+              </div>
+            </div>
+            <div class="comparison-item">
+              <p class="comparison-label">Change Axis</p>
+              <div class="comparison-content">
+                <span class="comparison-values">Community Avg: <strong>${Math.round(stats.avg_change)}</strong>%</span>
+                <span class="comparison-values">Your Score: <span class="comparison-your-score">${r.change}%</span></span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
       document.getElementById('content').innerHTML = `
         <div class="result-box">
           <p class="result-label">Your Political Philosophy</p>
@@ -611,6 +749,7 @@
                 <div class="axis-labels"><span>${a.left}</span><span>${a.right}</span></div>
               </div>`).join('')}
           </div>
+          ${comparisonHTML}
           <button class="btn btn-ghost restart-btn" onclick="restart()">Retake Quiz</button>
         </div>`;
     }
